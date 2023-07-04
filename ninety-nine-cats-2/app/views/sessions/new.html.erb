@@ -1,13 +1,23 @@
-<h2>Login</h2>
+<section class="page"><div class="centered-box">
+    <h1>Sign In</h1>
 
-<form action="<%= session_url %>" method="POST">
-    <label for="username">Username: 
-        <input id="username" type="text" name="user[username]" value="<%= @user.username %>">
-    </label>
+    <%= render "shared/errors" %>
 
-    <label for="password">Password: 
-        <input type="password" name="user[password]" id="password">
-    </label>
+    <form action="<%= session_url %>" method="POST">
+        <input
+            type="hidden"
+            name="authenticity_token"
+            value="<%= form_authenticity_token %>"
+        >
 
-    <input type="submit" value="Log in!"/>
-</form>
+        <label for="username">Username: </label>
+        <input id="username" type="text" name="user[username]">
+        <br>
+
+        <label for="password">Password: </label>
+        <input id="password" type="password" name="user[password]">
+        <br>
+
+        <input type="submit" value="Log in!"/>
+    </form>
+</div></section>
