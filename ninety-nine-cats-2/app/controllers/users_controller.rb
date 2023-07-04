@@ -1,4 +1,9 @@
 class UsersController < ApplicationController
+    def show
+        @user = User.find_by(id: params[:id])
+        render :show
+    end
+    
     def new
         @user = User.new
         render :new
@@ -7,7 +12,8 @@ class UsersController < ApplicationController
     def create
         @user = User.new(user_params)
         if @user.save
-            redirect_to user_url(@user.id)
+            login(@user)
+            redirect_to cats_url
         else
             render :new
         end
