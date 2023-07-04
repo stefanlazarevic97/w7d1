@@ -14,33 +14,25 @@
 require 'action_view'
 
 class Cat < ApplicationRecord
-  include ActionView::Helpers::DateHelper
+    include ActionView::Helpers::DateHelper
 
-  # .freeze renders a constant immutable.
-  CAT_COLORS = %w[black white orange brown].freeze
+    CAT_COLORS = %w[black white orange brown mixed].freeze
 
-  validates :color, inclusion: CAT_COLORS
-  validates :sex, inclusion: %w[M F]
-  # Note that you don't need to validate `color` or `sex` for presence because
-  # NULL values for those columns will fail the inclusion tests.
-  validates :birth_date, :name, presence: true
-  validate :birth_date_cannot_be_future
+    validates :color, inclusion: CAT_COLORS
+    validates :sex, inclusion: %w[M F]
+    validates :birth_date, :name, presence: true
+    validate :birth_date_cannot_be_future
 
-  # Remember: `has_many` is just a method where the first argument is the name
-  # of the association and the second argument is an options hash.
-  has_many :rental_requests,
-    class_name: :CatRentalRequest,
-    dependent: :destroy
+    has_many :rental_requests,
+        class_name: :CatRentalRequest,
+        dependent: :destroy
 
-  def birth_date_cannot_be_future
-    # Must check that birth_date is present because `>` will crash if run on
-    # `nil`
-    return unless birth_date.present? && birth_date > Date.today
+    def birth_date_cannot_be_future
+        return unless birth_date.present? && birth_date > Date.today
+        errors.add(:birth_date, "can't be in the future")
+    end
 
-    errors.add(:birth_date, "can't be in the future")
-  end
-
-  def age
-    time_ago_in_words(birth_date)
-  end
+    def age
+        time_ago_in_words(birth_date)
+    end
 end

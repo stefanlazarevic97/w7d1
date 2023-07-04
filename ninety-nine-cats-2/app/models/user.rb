@@ -10,12 +10,23 @@
 #  updated_at      :datetime         not null
 #
 class User < ApplicationRecord
-    validates :password_digest, :session_token, presence: true
-    validates :username, presence: true, uniqueness: true
-    validates :session_token, uniqueness: { scope: :username }
-
-    attr_accessor :password
     before_validation :ensure_session_token
+    
+    validates :password_digest, presence: true
+    validates :username, :session_token, presence: true, uniqueness: true
+    validates :password, length: { minimum: 6, allow_nil: true }
+
+    attr_reader :password
+
+    has_many :cats,
+        foreign_key: :owner_id,
+        dependent: :destroy,
+        inverse_of: :owner_id
+
+    has_many :cat_rental_requests,
+        foreign_key: :requester_id,
+        dependent: :destroy,
+        inverse_of: :requester
 
     def password=(password)
         @password = password
@@ -40,7 +51,11 @@ class User < ApplicationRecord
     def reset_session_token!
         self.session_token = generate_unique_session_token
         self.save!
-        return self.session_token
+        self.session_token
+    end
+
+    def owns_cat?(cat)
+        cat.owner == self
     end
 
     private
